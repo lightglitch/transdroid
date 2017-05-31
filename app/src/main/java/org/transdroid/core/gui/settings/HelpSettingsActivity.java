@@ -34,7 +34,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
 
 @EActivity
 public class HelpSettingsActivity extends PreferenceCompatActivity {

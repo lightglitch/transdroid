@@ -25,7 +25,6 @@ import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -98,7 +97,7 @@ public class SearchActivity extends AppCompatActivity {
 	@AfterViews
 	protected void init() {
 
-		searchToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+		searchToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_material);
 		searchToolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

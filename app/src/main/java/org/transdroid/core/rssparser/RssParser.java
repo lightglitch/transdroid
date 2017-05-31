@@ -6,19 +6,6 @@ package org.transdroid.core.rssparser;
 
 import android.text.TextUtils;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.transdroid.daemon.util.HttpHelper;
-import org.transdroid.daemon.util.TlsSniSocketFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -27,12 +14,17 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-@SuppressWarnings("deprecation")
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
+
 public class RssParser extends DefaultHandler {
 
 	private final String urlString;
@@ -87,12 +79,13 @@ public class RssParser extends DefaultHandler {
 	 */
 	public void parse() throws ParserConfigurationException, SAXException, IOException {
 
-		DefaultHttpClient httpclient = initialise();
-		HttpResponse result = httpclient.execute(new HttpGet(urlString));
+		OkHttpClient client = initialise();
+		Response response = client.newCall(new Request.Builder().url(urlString).build()).execute();
+
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		if (spf != null) {
 			SAXParser sp = spf.newSAXParser();
-			sp.parse(result.getEntity().getContent(), this);
+			sp.parse(response.body().byteStream(), this);
 		}
 
 		// Apply filters
@@ -128,23 +121,17 @@ public class RssParser extends DefaultHandler {
 		return true;
 	}
 
-	private DefaultHttpClient initialise() {
+	private OkHttpClient initialise() {
 
-		SchemeRegistry registry = new SchemeRegistry();
-		registry.register(new Scheme("http", new PlainSocketFactory(), 80));
-		registry.register(new Scheme("https", new TlsSniSocketFactory(), 443));
+		HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+		loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+		OkHttpClient client = new OkHttpClient.Builder()
+				.readTimeout(10, TimeUnit.SECONDS)
+				.connectTimeout(10, TimeUnit.SECONDS)
+				.addInterceptor(loggingInterceptor)
+				.build();
 
-		HttpParams httpparams = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(httpparams, 5000);
-		HttpConnectionParams.setSoTimeout(httpparams, 5000);
-		DefaultHttpClient httpclient = new DefaultHttpClient(new ThreadSafeClientConnManager(httpparams, registry),
-				httpparams);
-
-		httpclient.addRequestInterceptor(HttpHelper.gzipRequestInterceptor);
-		httpclient.addResponseInterceptor(HttpHelper.gzipResponseInterceptor);
-
-		return httpclient;
-
+		return client;
 	}
 
 	/**

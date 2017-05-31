@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
@@ -58,8 +60,9 @@ public class SearchSiteView extends LinearLayout {
 		// Clear and then asynchronously load the site's favicon
 		// Uses the g.etfv.co service to resolve the favicon of any URL
 		faviconImage.setImageDrawable(null);
-		navigationHelper.getImageCache().displayImage(String.format(GETFVO_URL, rssfeedLoader.getBaseUrl()), faviconImage);
-
+		Glide.with(this)
+				.load(String.format(GETFVO_URL, rssfeedLoader.getBaseUrl()))
+				.into(faviconImage);
 	}
 
 }

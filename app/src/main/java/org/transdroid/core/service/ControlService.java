@@ -9,7 +9,6 @@ import org.androidannotations.annotations.EService;
 import org.transdroid.core.app.settings.ApplicationSettings;
 import org.transdroid.core.app.settings.ServerSetting;
 import org.transdroid.core.gui.log.Log;
-import org.transdroid.core.widget.ListWidgetConfig;
 import org.transdroid.core.widget.*;
 import org.transdroid.daemon.IDaemonAdapter;
 import org.transdroid.daemon.task.DaemonTask;

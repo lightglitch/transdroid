@@ -23,6 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
@@ -71,7 +73,10 @@ public class RssfeedView extends LinearLayout {
 		// Clear and then asynchronously load the RSS feed site' favicon
 		// Uses the g.etfv.co service to resolve the favicon of any feed URL
 		faviconImage.setImageDrawable(null);
-		navigationHelper.getImageCache().displayImage(String.format(GRABICON_URL, rssfeedLoader.getSetting().getUrl()), faviconImage);
+
+		Glide.with(this)
+				.load(String.format(GRABICON_URL, rssfeedLoader.getSetting().getUrl()))
+				.into(faviconImage);
 
 	}
 

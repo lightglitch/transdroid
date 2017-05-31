@@ -20,7 +20,6 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.EBean.Scope;
 
-import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 

@@ -35,20 +35,12 @@ import android.text.style.TypefaceSpan;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration.Builder;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 import org.transdroid.BuildConfig;
 import org.transdroid.R;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -64,7 +56,6 @@ public class NavigationHelper {
 	private static final int REQUEST_SETTINGS_READ_PERMISSION = 1;
 	private static final int REQUEST_SETTINGS_WRITE_PERMISSION = 2;
 
-	private static ImageLoader imageCache;
 	@RootContext
 	protected Context context;
 
@@ -200,34 +191,6 @@ public class NavigationHelper {
 			return uri.toString().substring(begin, end >= 0 ? end : uri.toString().length());
 		}
 		return null;
-	}
-
-	/**
-	 * Returns (and initialises, if needed) an image cache that uses memory and (1MB) local storage.
-	 * @return An image cache that loads web images synchronously and transparently
-	 */
-	public ImageLoader getImageCache() {
-		if (imageCache == null) {
-			imageCache = ImageLoader.getInstance();
-			try {
-				LruDiskCache diskCache = new LruDiskCache(context.getCacheDir(), null, new Md5FileNameGenerator(), 640000, 25);
-				// @formatter:off
-				Builder imageCacheBuilder = new Builder(context)
-						.defaultDisplayImageOptions(
-								new DisplayImageOptions.Builder()
-										.cacheInMemory(true)
-										.cacheOnDisk(true)
-										.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
-										.showImageForEmptyUri(R.drawable.ic_launcher).build())
-						.memoryCache(new UsingFreqLimitedMemoryCache(1024 * 1024))
-						.diskCache(diskCache);
-				imageCache.init(imageCacheBuilder.build());
-			// @formatter:on
-			} catch (IOException e) {
-				// The cache directory is always available on Android; ignore this exception
-			}
-		}
-		return imageCache;
 	}
 
 	public void forceOpenInBrowser(Uri link) {
