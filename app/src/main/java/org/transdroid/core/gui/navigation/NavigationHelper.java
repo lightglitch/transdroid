@@ -63,6 +63,7 @@ public class NavigationHelper {
 	private static final int REQUEST_TORRENT_READ_PERMISSION = 0;
 	private static final int REQUEST_SETTINGS_READ_PERMISSION = 1;
 	private static final int REQUEST_SETTINGS_WRITE_PERMISSION = 2;
+	private static final int REQUEST_LOCATION_PERMISSION = 3;
 
 	private static ImageLoader imageCache;
 	@RootContext
@@ -71,22 +72,28 @@ public class NavigationHelper {
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public boolean checkTorrentReadPermission(final Activity activity) {
 		return Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT ||
-				checkPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_TORRENT_READ_PERMISSION);
+				checkPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_TORRENT_READ_PERMISSION, R.string.permission_readtorrent);
 	}
 
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public boolean checkSettingsReadPermission(final Activity activity) {
 		return Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT ||
-				checkPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_SETTINGS_READ_PERMISSION);
+				checkPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_SETTINGS_READ_PERMISSION, R.string.permission_readsettings);
 	}
 
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public boolean checkSettingsWritePermission(final Activity activity) {
 		return Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT ||
-				checkPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_SETTINGS_WRITE_PERMISSION);
+				checkPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_SETTINGS_WRITE_PERMISSION, R.string.permission_writesettings);
 	}
 
-	private boolean checkPermission(final Activity activity, final String permission, final int requestCode) {
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	public boolean checkLocationPermission(final Activity activity) {
+		return Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT ||
+				checkPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION, REQUEST_LOCATION_PERMISSION, R.string.permission_location);
+	}
+
+	private boolean checkPermission(final Activity activity, final String permission, final int requestCode, final int contentRes) {
 		if (hasPermission(permission))
 			// Permission already granted
 			return true;
@@ -94,7 +101,7 @@ public class NavigationHelper {
 			// Never asked again: show a dialog with an explanation
 			activity.runOnUiThread(new Runnable() {
 				public void run() {
-					new MaterialDialog.Builder(context).content(R.string.permission_readtorrent).positiveText(android.R.string.ok)
+					new MaterialDialog.Builder(context).content(contentRes).positiveText(android.R.string.ok)
 						.onPositive(new MaterialDialog.SingleButtonCallback() {
 							@Override
 							public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {

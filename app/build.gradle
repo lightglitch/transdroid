@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
     useLibrary 'org.apache.http.legacy'
-    flavorDimensions "full", "lite"
+    flavorDimensions "default"
 
 
     defaultConfig {
@@ -28,12 +28,12 @@ android {
     }
     productFlavors {
         full {
-            dimension "full"
+            dimension "default"
             applicationIdSuffix  '.full'
             resValue "string", "search_history_authority", applicationId + ".search.SearchHistoryProvider"
         }
         lite {
-            dimension "lite"
+            dimension "default"
             applicationIdSuffix '.lite'
             resValue "string", "search_history_authority", applicationId + ".search.SearchHistoryProvider"
         }

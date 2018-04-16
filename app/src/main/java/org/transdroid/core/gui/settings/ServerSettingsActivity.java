@@ -26,14 +26,17 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.transdroid.R;
 import org.transdroid.core.app.settings.ApplicationSettings_;
+import org.transdroid.core.gui.navigation.NavigationHelper;
 import org.transdroid.daemon.Daemon;
 
 /**
@@ -47,6 +50,18 @@ public class ServerSettingsActivity extends KeyBoundPreferencesActivity {
 	private static final int DIALOG_CONFIRMREMOVE = 0;
 
 	private EditTextPreference extraPass, folder, downloadDir, excludeFilter, includeFilter;
+
+	@Bean
+	protected NavigationHelper navigationHelper;
+	private Preference.OnPreferenceClickListener onLocalSettingClick = new Preference.OnPreferenceClickListener() {
+		@SuppressWarnings("deprecation")
+		@Override
+		public boolean onPreferenceClick(Preference preference) {
+			if (!navigationHelper.checkLocationPermission(ServerSettingsActivity.this))
+				return false; // We are requesting permission to access file storage
+			return true;
+		}
+	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,7 +78,7 @@ public class ServerSettingsActivity extends KeyBoundPreferencesActivity {
 		initTextPreference("server_user");
 		initTextPreference("server_pass");
 		extraPass = initTextPreference("server_extrapass");
-		initTextPreference("server_localnetwork");
+		initTextPreference("server_localnetwork").setOnPreferenceClickListener(onLocalSettingClick);
 		initTextPreference("server_localaddress");
 		initTextPreference("server_localport");
 		folder = initTextPreference("server_folder");
